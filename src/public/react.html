@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>To-Do</title>
+        <script
+            crossorigin
+            src="https://unpkg.com/react@17/umd/react.production.min.js"
+        ></script>
+        <script
+            crossorigin
+            src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"
+        ></script>
+        <script src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
+    </head>
+    <body>
+        <a href="/">Back Home</a> > React
+        <div id="root"></div>
+        <script type="text/babel">
+            const Todos = () => {
+                const [todos, setTodos] = React.useState([])
+                const [newTodo, setNewTodo] = React.useState("")
+
+                const getTodos = () =>
+                    fetch("/api/todos-json")
+                        .then((res) => res.json())
+                        .then((data) => setTodos(data))
+
+                const addTodo = () =>
+                    fetch("/api/todos-json", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ newTodo }),
+                    })
+                        .then((res) => res.json())
+                        .then((data) => {
+                            setTodos([...todos, data])
+                            setNewTodo("")
+                        })
+
+                const updateTodo = (id, completed) => (e) =>
+                    fetch(`/api/todos-json/${id}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ completed }),
+                    })
+                        .then((res) => res.json())
+                        .then((data) =>
+                            setTodos(
+                                todos.map((todo) =>
+                                    todo.id === id ? data : todo,
+                                ),
+                            ),
+                        )
+
+                const deleteTodo = (id) => (e) =>
+                    fetch(`/api/todos-json/${id}`, { method: "DELETE" })
+                        .then((res) => res.json())
+                        .then((data) =>
+                            setTodos(
+                                todos.filter((todo) => todo.id !== data.id),
+                            ),
+                        )
+
+                React.useEffect(() => {
+                    getTodos()
+                }, [])
+
+                return (
+                    <div>
+                        {todos.map(({ id, text, completed }) => (
+                            <div style={{ border: "1px solid black" }}>
+                                <div>ID: {id}</div>
+                                <div>Text: {text}</div>
+                                <div>
+                                    Completed?: {completed ? "true" : "false"}
+                                </div>
+                                <button onClick={updateTodo(id, !completed)}>
+                                    Toggle Completed
+                                </button>
+                                <button onClick={deleteTodo(id)}>Delete</button>
+                            </div>
+                        ))}
+                        <input
+                            type="text"
+                            name="newTodo"
+                            value={newTodo}
+                            onChange={(e) => setNewTodo(e.target.value)}
+                        />
+                        <button onClick={addTodo}>Add todo</button>
+                    </div>
+                )
+            }
+
+            ReactDOM.render(<Todos />, document.querySelector("#root"))
+        </script>
+    </body>
+</html>
