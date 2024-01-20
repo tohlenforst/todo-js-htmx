@@ -5,13 +5,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>To-Do</title>
         <script
-            src="https://unpkg.com/react@17/umd/react.production.min.js"
-            integrity="sha384-7Er69WnAl0+tY5MWEvnQzWHeDFjgHSnlQfDDeWUvv8qlRXtzaF/pNo18Q2aoZNiO"
+            src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"
+            integrity="sha384-tMH8h3BGESGckSAVGZ82T9n90ztNXxvdwvdM6UoR56cYcf+0iGXBliJ29D+wZ/x8"
             crossorigin="anonymous"
         ></script>
         <script
-            src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"
-            integrity="sha384-vj2XpC1SOa8PHrb0YlBqKN7CQzJYO72jz4CkDQ+ePL1pwOV4+dn05rPrbLGUuvCv"
+            src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"
+            integrity="sha384-bm7MnzvK++ykSwVJ2tynSE5TRdN+xL418osEVF2DE/L/gfWHj91J2Sphe582B1Bh"
             crossorigin="anonymous"
         ></script>
         <script
@@ -93,7 +93,9 @@
                 )
             }
 
-            ReactDOM.render(<Todos />, document.querySelector("#root"))
+            const container = document.querySelector("#root")
+            const root = ReactDOM.createRoot(container)
+            root.render(<Todos />)
         </script>
     </body>
 </html>
