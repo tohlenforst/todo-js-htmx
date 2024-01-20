@@ -3,14 +3,15 @@
     "name": "todo-js-htmx",
     "type": "module",
     "scripts": {
-        "dev": "nodemon ./src/main.js"
+        "dev:bun": "npx bun run --hot ./src/app.js",
+        "dev:node": "npx nodemon ./src/node.js",
+        "dev": "npm run dev:bun"
     },
     "prettier": {
         "tabWidth": 4,
         "semi": false
     },
     "devDependencies": {
-        "nodemon": "^3.0.1",
         "prettier": "^3.0.1"
     },
     "dependencies": {
