@@ -5,14 +5,20 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>To-Do</title>
         <script
-            crossorigin
             src="https://unpkg.com/react@17/umd/react.production.min.js"
+            integrity="sha384-7Er69WnAl0+tY5MWEvnQzWHeDFjgHSnlQfDDeWUvv8qlRXtzaF/pNo18Q2aoZNiO"
+            crossorigin="anonymous"
         ></script>
         <script
-            crossorigin
             src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"
+            integrity="sha384-vj2XpC1SOa8PHrb0YlBqKN7CQzJYO72jz4CkDQ+ePL1pwOV4+dn05rPrbLGUuvCv"
+            crossorigin="anonymous"
         ></script>
-        <script src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
+        <script
+            src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"
+            integrity="sha384-VgZgZqjY9Fh+YsIGYp/Vzpbz9fdsC3TLwB4MrpOstd9QcaJdH/8aYw5vwisv8i8d"
+            crossorigin="anonymous"
+        ></script>
     </head>
     <body>
         <a href="/">Back Home</a> > React
@@ -22,46 +28,40 @@
                 const [todos, setTodos] = React.useState([])
                 const [newTodo, setNewTodo] = React.useState("")
 
-                const getTodos = () =>
-                    fetch("/api/todos-json")
-                        .then((res) => res.json())
-                        .then((data) => setTodos(data))
+                const getTodos = async () => {
+                    const res = await fetch("/api/todos-json/")
+                    const data = await res.json()
+                    setTodos(data)
+                }
 
-                const addTodo = () =>
-                    fetch("/api/todos-json", {
+                const addTodo = async () => {
+                    const res = await fetch("/api/todos-json/", {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ newTodo }),
                     })
-                        .then((res) => res.json())
-                        .then((data) => {
-                            setTodos([...todos, data])
-                            setNewTodo("")
-                        })
+                    const data = await res.json()
+                    setTodos([...todos, data])
+                    setNewTodo("")
+                }
 
-                const updateTodo = (id, completed) => (e) =>
-                    fetch(`/api/todos-json/${id}`, {
+                const updateTodo = (id, completed) => async (e) => {
+                    const res = await fetch("/api/todos-json/" + id, {
                         method: "PUT",
-                        headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ completed }),
                     })
-                        .then((res) => res.json())
-                        .then((data) =>
-                            setTodos(
-                                todos.map((todo) =>
-                                    todo.id === id ? data : todo,
-                                ),
-                            ),
-                        )
+                    const data = await res.json()
+                    setTodos(
+                        todos.map((todo) => (todo.id === id ? data : todo)),
+                    )
+                }
 
-                const deleteTodo = (id) => (e) =>
-                    fetch(`/api/todos-json/${id}`, { method: "DELETE" })
-                        .then((res) => res.json())
-                        .then((data) =>
-                            setTodos(
-                                todos.filter((todo) => todo.id !== data.id),
-                            ),
-                        )
+                const deleteTodo = (id) => async (e) => {
+                    const res = await fetch("/api/todos-json/" + id, {
+                        method: "DELETE",
+                    })
+                    const data = await res.json()
+                    setTodos(todos.filter((todo) => todo.id !== data.id))
+                }
 
                 React.useEffect(() => {
                     getTodos()

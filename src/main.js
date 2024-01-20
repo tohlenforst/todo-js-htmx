@@ -1,15 +1,16 @@
-import express from "express"
-import morgan from "morgan"
+import { Hono } from "hono"
+import { logger } from "hono/logger"
+import { serve } from "@hono/node-server"
+import { serveStatic } from "@hono/node-server/serve-static"
+
 import todosJson from "./api/todos-json.js"
 import todosHx from "./api/todos-hx.js"
 
-const app = express()
-app.use(morgan("dev"))
-app.use(express.static("src/public"))
+const app = new Hono()
+app.use("*", logger())
+app.get("/*", serveStatic({ root: "./src/public/" }))
 
-app.use("/api/todos-json", todosJson)
-app.use("/api/todos-hx", todosHx)
+app.route("/api/todos-json/", todosJson)
+app.route("/api/todos-hx/", todosHx)
 
-app.listen(3000, () => {
-    console.log("TODOS RUNNING ON PORT 3000")
-})
+serve(app, ({ port }) => console.log(`Listening on http://localhost:${port}`))

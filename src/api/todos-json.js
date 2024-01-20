@@ -1,6 +1,5 @@
-import { default as express, Router } from "express"
-const router = Router()
-router.use(express.json())
+import { Hono } from "hono"
+const router = new Hono()
 
 const todos = [
     { id: 1, text: "Learn React", completed: true },
@@ -8,32 +7,31 @@ const todos = [
     { id: 3, text: "Build something fun!", completed: false },
 ]
 
-router.get("/", (_req, res) => {
-    res.json(todos)
-})
+router.get("/", (c) => c.json(todos))
 
-router.post("/", (req, res) => {
-    const todo = {
-        id: todos[todos.length - 1].id + 1,
-        text: req.body.newTodo,
+router.post("/", async (c) => {
+    const { newTodo } = await c.req.json()
+    const createdTodo = {
+        id: (todos.at(-1)?.id || 0) + 1,
+        text: newTodo,
         completed: false,
     }
-    todos.push(todo)
-    res.json(todo)
+    todos.push(createdTodo)
+    return c.json(createdTodo)
 })
 
-router.put("/:id", (req, res) => {
-    const id = Number(req.params.id)
+router.put("/:id", (c) => {
+    const id = Number(c.req.param("id"))
     const updatedTodo = todos.find((todo) => todo.id === id)
     updatedTodo.completed = !updatedTodo.completed
-    res.json(updatedTodo)
+    return c.json(updatedTodo)
 })
 
-router.delete("/:id", (req, res) => {
-    const id = Number(req.params.id)
+router.delete("/:id", (c) => {
+    const id = Number(c.req.param("id"))
     const deletedTodo = todos.find((todo) => todo.id === id)
     todos.splice(todos.indexOf(deletedTodo), 1)
-    res.json(deletedTodo)
+    return c.json(deletedTodo)
 })
 
 export default router
